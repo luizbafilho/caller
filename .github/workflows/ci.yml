@@ -52,5 +52,4 @@ jobs:
 
           echo VERSION=$VERSION
 
-          docker tag image luizbafilho/caller:$VERSION
           docker push luizbafilho/caller:$VERSION
