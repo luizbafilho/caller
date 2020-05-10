@@ -4,7 +4,7 @@ services:
     build: .
     volumes:
       - ".:/app"
-  test:
+  tests:
     build:
       context: .
       dockerfile: Dockerfile.test
