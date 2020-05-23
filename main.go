@@ -1,17 +1,32 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	"os"
+
+	"github.com/labstack/echo-contrib/prometheus"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
-}
-
 func main() {
-	http.HandleFunc("/", handler)
-	fmt.Println("Listening at :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Echo instance
+	e := echo.New()
+	// Enable metrics middleware
+	p := prometheus.NewPrometheus("echo", nil)
+	p.Use(e)
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.RequestID())
+
+	// Routes
+	e.POST("/call", callHandler)
+
+	port := "8080"
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+	// Start server
+	e.Logger.Fatal(e.Start(":" + port))
 }
